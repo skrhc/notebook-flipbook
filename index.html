@@ -21,12 +21,22 @@
             min-height: 100vh;
         }
 
-        #book {
+        #flipbook-container {
+            width: 90vw;
+            height: 90vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #flipbook {
             box-shadow: 0 0 40px rgba(0,0,0,0.3);
+            margin: auto;
         }
 
         .page {
-            background: transparent;
+            background: white;
+            display: none;
         }
 
         .page img {
@@ -34,62 +44,58 @@
             height: 100%;
             object-fit: contain;
         }
+
+        .page.hard {
+            background: #2c2c2c;
+        }
     </style>
 </head>
 <body>
-    <div id="book"></div>
+    <div id="flipbook-container">
+        <div id="flipbook"></div>
+    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://raw.githack.com/blasten/turn.js/master/turn.min.js"></script>
+    
     <script>
-        const totalPages = 110;
-        const bookContainer = document.getElementById('book');
+        $(window).on('load', function() {
+            const totalPages = 110;
+            const flipbook = $('#flipbook');
 
-        // Create pages
-        for (let i = 1; i <= totalPages; i++) {
-            const page = document.createElement('div');
-            page.className = 'page';
-            
-            const img = document.createElement('img');
-            img.src = `book/page-${String(i).padStart(4, '0')}.jpg`;
-            
-            page.appendChild(img);
-            bookContainer.appendChild(page);
-        }
-
-        // Initialize PageFlip
-        const pageFlip = new St.PageFlip(bookContainer, {
-            width: 500,
-            height: 733,
-            size: 'fixed',
-            minWidth: 315,
-            maxWidth: 1000,
-            minHeight: 420,
-            maxHeight: 1350,
-            maxShadowOpacity: 0.5,
-            showCover: true,
-            mobileScrollSupport: false,
-            swipeDistance: 30,
-            clickEventForward: true,
-            usePortrait: true,
-            startPage: 0,
-            drawShadow: true,
-            flippingTime: 1000,
-            useMouseEvents: true,
-            autoSize: true,
-            showPageCorners: true,
-            disableFlipByClick: false
-        });
-
-        pageFlip.loadFromHTML(document.querySelectorAll('.page'));
-
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight') {
-                pageFlip.flipNext();
+            // Add pages
+            for (let i = 1; i <= totalPages; i++) {
+                const pageClass = i === 1 ? 'page hard' : 'page';
+                flipbook.append(`
+                    <div class="${pageClass}">
+                        <img src="book/page-${String(i).padStart(4, '0')}.jpg">
+                    </div>
+                `);
             }
-            if (e.key === 'ArrowLeft') {
-                pageFlip.flipPrev();
-            }
+
+            // Responsive sizing
+            const maxHeight = window.innerHeight * 0.85;
+            const pageHeight = maxHeight;
+            const pageWidth = (pageHeight * 1125) / 1754;
+
+            setTimeout(function() {
+                flipbook.turn({
+                    width: pageWidth * 2,
+                    height: pageHeight,
+                    autoCenter: true,
+                    elevation: 50,
+                    gradients: true,
+                    duration: 800,
+                    display: 'double',
+                    acceleration: true
+                });
+
+                // Keyboard nav
+                $(document).keydown(function(e) {
+                    if (e.keyCode == 37) flipbook.turn('previous');
+                    if (e.keyCode == 39) flipbook.turn('next');
+                });
+            }, 100);
         });
     </script>
 </body>
