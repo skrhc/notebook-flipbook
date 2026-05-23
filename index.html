@@ -65,12 +65,12 @@
 
     <script>
         function loadApp() {
-            const totalPages = 109;
+            const totalPages = 111;
             const flipbook = $('#flipbook');
             
             // Build ALL pages first
             let pagesHTML = '';
-            for (let i = 2; i <= totalPages + 1; i++) {
+            for (let i = 1; i <= totalPages + 1; i++) {
                 const pageNum = String(i).padStart(4, '0');
                 pagesHTML += `<div class="page"><img src="book/page-${pageNum}.jpg"></div>`;
             }
@@ -121,7 +121,7 @@
                     gradients: true,
                     duration: 1000,
                     pages: totalPages,
-                    page: 2
+                    page: 1
                 });
 
                 // Show flipbook after initialization
