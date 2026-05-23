@@ -26,16 +26,16 @@
         }
 
         #flipbook {
-    box-shadow: 0 0 40px rgba(0,0,0,0.3);
-    border-radius: 12px;
-    overflow: hidden;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-}
+            box-shadow: 0 0 40px rgba(0,0,0,0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
 
-#flipbook.ready {
-    opacity: 1;
-}
+        #flipbook.ready {
+            opacity: 1;
+        }
 
         #flipbook .page {
             background: transparent;
@@ -69,11 +69,11 @@
             const flipbook = $('#flipbook');
             
             // Build ALL pages first
-let pagesHTML = '';
-for (let i = 2; i <= totalPages + 1; i++) {
-    const pageNum = String(i).padStart(4, '0');
-    pagesHTML += `<div class="page"><img src="book/page-${pageNum}.jpg"></div>`;
-}
+            let pagesHTML = '';
+            for (let i = 2; i <= totalPages + 1; i++) {
+                const pageNum = String(i).padStart(4, '0');
+                pagesHTML += `<div class="page"><img src="book/page-${pageNum}.jpg"></div>`;
+            }
             
             // Add all pages to DOM
             flipbook.html(pagesHTML);
@@ -123,6 +123,9 @@ for (let i = 2; i <= totalPages + 1; i++) {
                     pages: totalPages,
                     page: 2
                 });
+
+                // Show flipbook after initialization
+                flipbook.addClass('ready');
 
                 // Handle window resize in fullscreen
                 $(window).on('resize', function() {
