@@ -27,16 +27,27 @@
 
         #flipbook {
             box-shadow: 0 0 40px rgba(0,0,0,0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #flipbook.ready {
+            opacity: 1;
         }
 
         #flipbook .page {
-            background: white;
+            background: transparent;
+            border-radius: 12px;
+            overflow: hidden;
         }
 
         #flipbook .page img {
             width: 100%;
             height: 100%;
             display: block;
+            border-radius: 12px;
         }
 
         #flipbook .hard {
@@ -50,57 +61,118 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="js/turn.min.js"></script>
+    <script src="js/turn.min.js"></script>
 
-<script>
-    function loadApp() {
-        const totalPages = 110;
-        const flipbook = $('#flipbook');
-        
-        // Build ALL pages first
-        let pagesHTML = '';
-        for (let i = 1; i <= totalPages; i++) {
-            const hardClass = i === 1 ? ' hard' : '';
-            const pageNum = String(i).padStart(4, '0');
-            pagesHTML += `<div class="page${hardClass}"><img src="book/page-${pageNum}.jpg"></div>`;
+    <script>
+        function loadApp() {
+            const totalPages = 109;
+            const flipbook = $('#flipbook');
+            
+            // Build ALL pages first
+            let pagesHTML = '';
+            for (let i = 2; i <= totalPages + 1; i++) {
+                const pageNum = String(i).padStart(4, '0');
+                pagesHTML += `<div class="page"><img src="book/page-${pageNum}.jpg"></div>`;
+            }
+            
+            // Add all pages to DOM
+            flipbook.html(pagesHTML);
+            
+            // Wait for images to start loading, then initialize
+            setTimeout(function() {
+                
+                // Calculate size - check for fullscreen parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                const isFullscreen = urlParams.get('fs') === 'true';
+                let pageHeight, pageWidth;
+                
+                if (isFullscreen) {
+                    // In fullscreen: fit to screen maintaining aspect ratio
+                    const availHeight = $(window).height() * 0.95;
+                    const availWidth = $(window).width() * 0.95;
+                    
+                    // Calculate based on aspect ratio
+                    const heightBasedWidth = (availHeight * 1125) / 1754 * 2;
+                    
+                    if (heightBasedWidth <= availWidth) {
+                        // Height is the constraint
+                        pageHeight = availHeight;
+                        pageWidth = (pageHeight * 1125) / 1754;
+                    } else {
+                        // Width is the constraint
+                        pageWidth = availWidth / 2;
+                        pageHeight = (pageWidth * 1754) / 1125;
+                    }
+                } else {
+                    // Normal mode
+                    const vh = $(window).height() * 0.9;
+                    pageHeight = vh;
+                    pageWidth = (pageHeight * 1125) / 1754;
+                }
+                
+                // Initialize turn.js
+                flipbook.turn({
+                    width: pageWidth * 2,
+                    height: pageHeight,
+                    autoCenter: true,
+                    display: 'double',
+                    acceleration: false,
+                    elevation: 50,
+                    gradients: true,
+                    duration: 1000,
+                    pages: totalPages,
+                    page: 2
+                });
+
+                // Show flipbook after initialization
+                flipbook.addClass('ready');
+
+                // Handle window resize in fullscreen
+                $(window).on('resize', function() {
+                    if (isFullscreen) {
+                        const availHeight = $(window).height() * 0.95;
+                        const availWidth = $(window).width() * 0.95;
+                        
+                        const heightBasedWidth = (availHeight * 1125) / 1754 * 2;
+                        
+                        let pageHeight, pageWidth;
+                        if (heightBasedWidth <= availWidth) {
+                            pageHeight = availHeight;
+                            pageWidth = (pageHeight * 1125) / 1754;
+                        } else {
+                            pageWidth = availWidth / 2;
+                            pageHeight = (pageWidth * 1754) / 1125;
+                        }
+                        
+                        flipbook.turn('size', pageWidth * 2, pageHeight);
+                    }
+                });
+                
+                // Keyboard navigation
+                $(document).keydown(function(e) {
+                    if (e.keyCode === 37) flipbook.turn('previous');
+                    if (e.keyCode === 39) flipbook.turn('next');
+                });
+                
+                // Click anywhere to turn pages
+                flipbook.on('click', function(e) {
+                    const offset = $(this).offset();
+                    const clickX = e.pageX - offset.left;
+                    const width = $(this).width();
+                    
+                    if (clickX < width / 2) {
+                        flipbook.turn('previous');
+                    } else {
+                        flipbook.turn('next');
+                    }
+                });
+                
+            }, 500);
         }
-        
-        // Add all pages to DOM
-        flipbook.html(pagesHTML);
-        
-        // Wait for images to start loading, then initialize
-        setTimeout(function() {
-            // Calculate size
-            const vh = $(window).height() * 0.9;
-            const pageHeight = vh;
-            const pageWidth = (pageHeight * 1125) / 1754;
-            
-            // Initialize turn.js
-            flipbook.turn({
-                width: pageWidth * 2,
-                height: pageHeight,
-                autoCenter: true,
-                display: 'double',
-                acceleration: true,
-                elevation: 50,
-                gradients: true,
-                duration: 1000,
-                pages: totalPages,
-                page: 1
-            });
-            
-            // Keyboard navigation
-            $(document).keydown(function(e) {
-                if (e.keyCode === 37) flipbook.turn('previous');
-                if (e.keyCode === 39) flipbook.turn('next');
-            });
-            
-        }, 500);
-    }
 
-    $(document).ready(function() {
-        loadApp();
-    });
-</script>
+        $(document).ready(function() {
+            loadApp();
+        });
+    </script>
 </body>
 </html>
