@@ -119,6 +119,26 @@ flipbook.on('click', function(e) {
     $(document).ready(function() {
         loadApp();
     });
+    
+    // Detect fullscreen and scale up
+document.addEventListener('fullscreenchange', function() {
+    const flipbook = $('#flipbook');
+    if (document.fullscreenElement) {
+        // In fullscreen - scale up 30%
+        const vh = $(window).height() * 1.17; // 0.9 * 1.3 = 1.17
+        const pageHeight = vh;
+        const pageWidth = (pageHeight * 1125) / 1754;
+        
+        flipbook.turn('size', pageWidth * 2, pageHeight);
+    } else {
+        // Exit fullscreen - back to normal
+        const vh = $(window).height() * 0.9;
+        const pageHeight = vh;
+        const pageWidth = (pageHeight * 1125) / 1754;
+        
+        flipbook.turn('size', pageWidth * 2, pageHeight);
+    }
+});
 </script>
 </body>
 </html>
