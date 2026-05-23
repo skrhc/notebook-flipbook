@@ -64,11 +64,10 @@
         
         // Build ALL pages first
         let pagesHTML = '';
-        for (let i = 1; i <= totalPages; i++) {
-            const hardClass = i === 1 ? ' hard' : '';
-            const pageNum = String(i).padStart(4, '0');
-            pagesHTML += `<div class="page${hardClass}"><img src="book/page-${pageNum}.jpg"></div>`;
-        }
+        for (let i = 2; i <= totalPages; i++) {
+    const pageNum = String(i).padStart(4, '0');
+    pagesHTML += `<div class="page"><img src="book/page-${pageNum}.jpg"></div>`;
+}
         
         // Add all pages to DOM
         flipbook.html(pagesHTML);
