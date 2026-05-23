@@ -63,11 +63,11 @@
             const flipbook = $('#flipbook');
             
             // Build ALL pages first
-            let pagesHTML = '';
-            for (let i = 2; i <= totalPages + 1; i++) {
-                const pageNum = String(i).padStart(4, '0');
-                pagesHTML += `<div class="page"><img src="book/page-${pageNum}.jpg"></div>`;
-            }
+let pagesHTML = '';
+for (let i = 2; i <= totalPages + 1; i++) {
+    const pageNum = String(i).padStart(4, '0');
+    pagesHTML += `<div class="page"><img src="book/page-${pageNum}.jpg"></div>`;
+}
             
             // Add all pages to DOM
             flipbook.html(pagesHTML);
@@ -115,7 +115,7 @@
                     gradients: true,
                     duration: 1000,
                     pages: totalPages,
-                    page: 1
+                    page: 2
                 });
 
                 // Handle window resize in fullscreen
