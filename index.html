@@ -15,15 +15,11 @@
             background: transparent;
             overflow: hidden;
             font-family: system-ui, -apple-system, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
         }
 
-        #flipbook-container {
-            width: 90vw;
-            height: 90vh;
+        #book-wrapper {
+            width: 100vw;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -31,71 +27,71 @@
 
         #flipbook {
             box-shadow: 0 0 40px rgba(0,0,0,0.3);
-            margin: auto;
         }
 
-        .page {
+        #flipbook .page {
             background: white;
-            display: none;
         }
 
-        .page img {
+        #flipbook .page img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            display: block;
         }
 
-        .page.hard {
-            background: #2c2c2c;
+        #flipbook .hard {
+            background: #1a1a1a;
         }
     </style>
 </head>
 <body>
-    <div id="flipbook-container">
+    <div id="book-wrapper">
         <div id="flipbook"></div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://raw.githack.com/blasten/turn.js/master/turn.min.js"></script>
+    <script src="js/turn.min.js"></script>
     
     <script>
-        $(window).on('load', function() {
+        function loadApp() {
             const totalPages = 110;
-            const flipbook = $('#flipbook');
-
-            // Add pages
+            
+            // Build pages
+            let pages = '';
             for (let i = 1; i <= totalPages; i++) {
-                const pageClass = i === 1 ? 'page hard' : 'page';
-                flipbook.append(`
-                    <div class="${pageClass}">
-                        <img src="book/page-${String(i).padStart(4, '0')}.jpg">
-                    </div>
-                `);
+                const hardClass = i === 1 ? ' hard' : '';
+                const pageNum = String(i).padStart(4, '0');
+                pages += `<div class="page${hardClass}"><img src="book/page-${pageNum}.jpg"></div>`;
             }
-
-            // Responsive sizing
-            const maxHeight = window.innerHeight * 0.85;
-            const pageHeight = maxHeight;
+            
+            $('#flipbook').html(pages);
+            
+            // Calculate size
+            const vh = $(window).height() * 0.9;
+            const pageHeight = vh;
             const pageWidth = (pageHeight * 1125) / 1754;
+            
+            // Initialize
+            $('#flipbook').turn({
+                width: pageWidth * 2,
+                height: pageHeight,
+                autoCenter: true,
+                display: 'double',
+                acceleration: true,
+                elevation: 50,
+                gradients: true,
+                duration: 1000
+            });
+            
+            // Keyboard
+            $(document).keydown(function(e) {
+                if (e.keyCode === 37) $('#flipbook').turn('previous');
+                if (e.keyCode === 39) $('#flipbook').turn('next');
+            });
+        }
 
-            setTimeout(function() {
-                flipbook.turn({
-                    width: pageWidth * 2,
-                    height: pageHeight,
-                    autoCenter: true,
-                    elevation: 50,
-                    gradients: true,
-                    duration: 800,
-                    display: 'double',
-                    acceleration: true
-                });
-
-                // Keyboard nav
-                $(document).keydown(function(e) {
-                    if (e.keyCode == 37) flipbook.turn('previous');
-                    if (e.keyCode == 39) flipbook.turn('next');
-                });
-            }, 100);
+        $(window).ready(function() {
+            loadApp();
         });
     </script>
 </body>
