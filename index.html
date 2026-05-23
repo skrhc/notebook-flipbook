@@ -100,6 +100,19 @@
                 if (e.keyCode === 39) flipbook.turn('next');
             });
             
+            // Click anywhere to turn pages
+flipbook.on('click', function(e) {
+    const offset = $(this).offset();
+    const clickX = e.pageX - offset.left;
+    const width = $(this).width();
+    
+    if (clickX < width / 2) {
+        flipbook.turn('previous');
+    } else {
+        flipbook.turn('next');
+    }
+});
+            
         }, 500);
     }
 
