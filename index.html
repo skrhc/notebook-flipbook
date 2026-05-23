@@ -72,9 +72,10 @@
                 `);
             }
 
-            // Calculate dimensions based on image aspect ratio
-            const pageWidth = 640;
-            const pageHeight = 1000;
+            // Calculate dimensions to fit screen
+const windowHeight = $(window).height() * 0.9;
+const pageHeight = windowHeight;
+const pageWidth = (pageHeight / 1754) * 1125; // Maintain image aspect ratio
 
             // Initialize turn.js
             flipbook.turn({
