@@ -50,49 +50,67 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="js/turn.min.js"></script>
-    
-    <script>
-        function loadApp() {
-            const totalPages = 110;
-            
-            // Build pages
-            let pages = '';
-            for (let i = 1; i <= totalPages; i++) {
-                const hardClass = i === 1 ? ' hard' : '';
-                const pageNum = String(i).padStart(4, '0');
-                pages += `<div class="page${hardClass}"><img src="book/page-${pageNum}.jpg"></div>`;
-            }
-            
-            $('#flipbook').html(pages);
-            
-            // Calculate size
-            const vh = $(window).height() * 0.9;
-            const pageHeight = vh;
-            const pageWidth = (pageHeight * 1125) / 1754;
-            
-            // Initialize
-            $('#flipbook').turn({
-                width: pageWidth * 2,
-                height: pageHeight,
-                autoCenter: true,
-                display: 'double',
-                acceleration: true,
-                elevation: 50,
-                gradients: true,
-                duration: 1000
-            });
-            
-            // Keyboard
-            $(document).keydown(function(e) {
-                if (e.keyCode === 37) $('#flipbook').turn('previous');
-                if (e.keyCode === 39) $('#flipbook').turn('next');
-            });
-        }
+<script src="js/turn.min.js"></script>
 
-        $(window).ready(function() {
-            loadApp();
+<script>
+    function loadApp() {
+        const totalPages = 110;
+        
+        // Build pages
+        let pages = '';
+        for (let i = 1; i <= totalPages; i++) {
+            const hardClass = i === 1 ? ' hard' : '';
+            const pageNum = String(i).padStart(4, '0');
+            pages += `<div class="page${hardClass}"><img src="book/page-${pageNum}.jpg"></div>`;
+        }
+        
+        $('#flipbook').html(pages);
+        
+        // Calculate size
+        const vh = $(window).height() * 0.9;
+        const pageHeight = vh;
+        const pageWidth = (pageHeight * 1125) / 1754;
+        
+        // Initialize with all interactions enabled
+        $('#flipbook').turn({
+            width: pageWidth * 2,
+            height: pageHeight,
+            autoCenter: true,
+            display: 'double',
+            acceleration: true,
+            elevation: 50,
+            gradients: true,
+            duration: 1000,
+            when: {
+                turning: function(event, page, view) {
+                    console.log('Turning to page', page);
+                }
+            }
         });
-    </script>
+        
+        // Keyboard navigation
+        $(document).keydown(function(e) {
+            if (e.keyCode === 37) $('#flipbook').turn('previous');
+            if (e.keyCode === 39) $('#flipbook').turn('next');
+        });
+        
+        // Click on page corners to flip
+        $('#flipbook').bind('click', function(e) {
+            const flipbook = $(this);
+            const width = flipbook.width();
+            const clickX = e.pageX - flipbook.offset().left;
+            
+            if (clickX < width / 2) {
+                flipbook.turn('previous');
+            } else {
+                flipbook.turn('next');
+            }
+        });
+    }
+
+    $(window).ready(function() {
+        loadApp();
+    });
+</script>
 </body>
 </html>
