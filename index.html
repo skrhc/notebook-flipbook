@@ -75,10 +75,12 @@
         
         // Wait for images to start loading, then initialize
         setTimeout(function() {
-            // Calculate size
-            const vh = $(window).height() * 0.9;
-            const pageHeight = vh;
-            const pageWidth = (pageHeight * 1125) / 1754;
+            // Calculate size - check for fullscreen parameter
+const urlParams = new URLSearchParams(window.location.search);
+const isFullscreen = urlParams.get('fs') === 'true';
+const vh = $(window).height() * (isFullscreen ? 1.3 : 0.9);
+const pageHeight = vh;
+const pageWidth = (pageHeight * 1125) / 1754;
             
             // Initialize turn.js
             flipbook.turn({
