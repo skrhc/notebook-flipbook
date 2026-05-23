@@ -165,10 +165,10 @@
             const leftPage = currentPage;
             const rightPage = currentPage + 1;
 
-            imgLeft.src = `book/Black Notebook 2_compressed (1)_page-${padNumber(leftPage)}.jpg`;
+            imgLeft.src = `book/page-${padNumber(leftPage)}.jpg`;
             
             if (rightPage <= totalPages) {
-                imgRight.src = `book/Black Notebook 2_compressed (1)_page-${padNumber(rightPage)}.jpg`;
+                imgRight.src = `book/page-${padNumber(rightPage)}.jpg`;
                 imgRight.style.display = 'block';
             } else {
                 imgRight.style.display = 'none';
