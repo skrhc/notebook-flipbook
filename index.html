@@ -15,203 +15,82 @@
             background: transparent;
             overflow: hidden;
             font-family: system-ui, -apple-system, sans-serif;
-        }
-
-        .flipbook-container {
-            width: 100vw;
-            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            perspective: 2000px;
+            min-height: 100vh;
         }
 
-        .book {
-            position: relative;
-            width: 90%;
-            max-width: 1400px;
-            height: 90vh;
-            display: flex;
-            gap: 2px;
+        #book {
+            box-shadow: 0 0 40px rgba(0,0,0,0.3);
         }
 
         .page {
-            flex: 1;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
         .page img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            border-radius: 12px;
-        }
-
-        .controls {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            background: rgba(255,255,255,0.95);
-            padding: 15px 30px;
-            border-radius: 50px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        }
-
-        button {
-            background: #000;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-
-        button:hover {
-            background: #333;
-            transform: scale(1.05);
-        }
-
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: scale(1);
-        }
-
-        .page-number {
-            font-size: 16px;
-            font-weight: 600;
-            color: #000;
-            min-width: 100px;
-            text-align: center;
-        }
-
-        /* Click zones for navigation */
-        .click-left, .click-right {
-            position: absolute;
-            top: 0;
-            width: 50%;
-            height: 100%;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        .click-left {
-            left: 0;
-        }
-
-        .click-right {
-            right: 0;
-        }
-
-        .click-left:hover {
-            cursor: w-resize;
-        }
-
-        .click-right:hover {
-            cursor: e-resize;
         }
     </style>
 </head>
 <body>
-    <div class="flipbook-container">
-        <div class="book">
-            <div class="click-left"></div>
-            <div class="page" id="page-left">
-                <img id="img-left" src="" alt="Left page">
-            </div>
-            <div class="page" id="page-right">
-                <img id="img-right" src="" alt="Right page">
-            </div>
-            <div class="click-right"></div>
-        </div>
-    </div>
+    <div id="book"></div>
 
-    <div class="controls">
-        <button id="prev-btn">← Previous</button>
-        <span class="page-number" id="page-num">Pages 1-2 of 110</span>
-        <button id="next-btn">Next →</button>
-    </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
     <script>
         const totalPages = 110;
-        let currentPage = 1;
+        const bookContainer = document.getElementById('book');
 
-        const imgLeft = document.getElementById('img-left');
-        const imgRight = document.getElementById('img-right');
-        const pageNum = document.getElementById('page-num');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const clickLeft = document.querySelector('.click-left');
-        const clickRight = document.querySelector('.click-right');
-
-        function padNumber(num) {
-            return String(num).padStart(4, '0');
-        }
-
-        function updatePages() {
-            const leftPage = currentPage;
-            const rightPage = currentPage + 1;
-
-            imgLeft.src = `book/page-${padNumber(leftPage)}.jpg`;
+        // Create pages
+        for (let i = 1; i <= totalPages; i++) {
+            const page = document.createElement('div');
+            page.className = 'page';
             
-            if (rightPage <= totalPages) {
-                imgRight.src = `book/page-${padNumber(rightPage)}.jpg`;
-                imgRight.style.display = 'block';
-            } else {
-                imgRight.style.display = 'none';
-            }
-
-            if (rightPage <= totalPages) {
-                pageNum.textContent = `Pages ${leftPage}-${rightPage} of ${totalPages}`;
-            } else {
-                pageNum.textContent = `Page ${leftPage} of ${totalPages}`;
-            }
-
-            prevBtn.disabled = currentPage <= 1;
-            nextBtn.disabled = currentPage >= totalPages - 1;
+            const img = document.createElement('img');
+            img.src = `book/page-${String(i).padStart(4, '0')}.jpg`;
+            
+            page.appendChild(img);
+            bookContainer.appendChild(page);
         }
 
-        function nextPage() {
-            if (currentPage < totalPages - 1) {
-                currentPage += 2;
-                updatePages();
-            }
-        }
+        // Initialize PageFlip
+        const pageFlip = new St.PageFlip(bookContainer, {
+            width: 550,
+            height: 733,
+            size: 'stretch',
+            minWidth: 315,
+            maxWidth: 1000,
+            minHeight: 420,
+            maxHeight: 1350,
+            maxShadowOpacity: 0.5,
+            showCover: false,
+            mobileScrollSupport: false,
+            swipeDistance: 30,
+            clickEventForward: true,
+            usePortrait: true,
+            startPage: 0,
+            drawShadow: true,
+            flippingTime: 1000,
+            useMouseEvents: true,
+            autoSize: true,
+            showPageCorners: true,
+            disableFlipByClick: false
+        });
 
-        function prevPage() {
-            if (currentPage > 1) {
-                currentPage -= 2;
-                updatePages();
-            }
-        }
-
-        // Event listeners
-        nextBtn.addEventListener('click', nextPage);
-        prevBtn.addEventListener('click', prevPage);
-        clickRight.addEventListener('click', nextPage);
-        clickLeft.addEventListener('click', prevPage);
+        pageFlip.loadFromHTML(document.querySelectorAll('.page'));
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight') nextPage();
-            if (e.key === 'ArrowLeft') prevPage();
+            if (e.key === 'ArrowRight') {
+                pageFlip.flipNext();
+            }
+            if (e.key === 'ArrowLeft') {
+                pageFlip.flipPrev();
+            }
         });
-
-        // Initialize
-        updatePages();
     </script>
 </body>
 </html>
